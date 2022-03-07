@@ -2,7 +2,7 @@ import tcod
 
 import entitytypes
 from engine import Engine
-from eventhandler import EventHandler
+from eventdispatcher import EventDispatcher
 from mapgen import generate_dungeon
 
 
@@ -21,7 +21,7 @@ def main():
 
     tileset = tcod.tileset.load_tilesheet("dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
 
-    event_handler = EventHandler()
+    event_dispatcher = EventDispatcher()
 
     player = entitytypes.player.clone(0, 0)
 
@@ -34,7 +34,7 @@ def main():
         player=player,
         max_monsters_per_room=max_monsters_per_room,
     )
-    engine = Engine(event_handler=event_handler, game_map=game_map, player=player)
+    engine = Engine(event_dispatcher=event_dispatcher, game_map=game_map, player=player)
 
     with tcod.context.new_terminal(
         screen_width,

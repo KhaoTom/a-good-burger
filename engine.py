@@ -1,6 +1,6 @@
 class Engine:
-    def __init__(self, event_handler, game_map, player):
-        self.event_handler = event_handler
+    def __init__(self, event_dispatcher, game_map, player):
+        self.event_handler = event_dispatcher
         self.player = player
         self.game_map = game_map
         self.update_fov()
