@@ -1,21 +1,11 @@
-from typing import Iterable, Any
-
-from tcod.context import Context
-from tcod.console import Console
-
-from entity import Entity
-from eventhandler import EventHandler
-from gamemap import GameMap
-
-
 class Engine:
-    def __init__(self, entities: set[Entity], event_handler: EventHandler, game_map: GameMap, player: Entity):
+    def __init__(self, entities, event_handler, game_map, player):
         self.entities = entities
         self.event_handler = event_handler
         self.player = player
         self.game_map = game_map
 
-    def handle_events(self, events: Iterable[Any]) -> None:
+    def handle_events(self, events):
         for event in events:
             action = self.event_handler.dispatch(event)
 
@@ -24,7 +14,7 @@ class Engine:
 
             action.perform(self, self.player)
 
-    def render(self, console: Console, context: Context) -> None:
+    def render(self, console, context):
         self.game_map.render(console)
 
         for entity in self.entities:
