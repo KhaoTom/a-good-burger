@@ -2,7 +2,7 @@ import tcod
 
 import entitytypes
 import game
-from engine import Engine
+from states import MainState
 from eventdispatcher import EventDispatcher
 from mapgen import generate_dungeon
 
@@ -37,7 +37,17 @@ def main():
         player=player,
         max_monsters_per_room=max_monsters_per_room,
     )
-    engine = Engine(event_dispatcher=event_dispatcher, game_map=game_map, player=player)
+
+    states = [MainState()]
+
+    state_data = {
+        "event_dispatcher": event_dispatcher,
+        "game_map": game_map,
+        "player": player
+    }
+    states[0].enter_state(state_data)
+
+    current_state = states[0]
 
     with tcod.context.new_terminal(
         screen_width,
@@ -48,10 +58,10 @@ def main():
     ) as context:
         root_console = tcod.Console(screen_width, screen_height, order="F")
         while True:
-            engine.render(console=root_console, context=context)
+            current_state.render(console=root_console, context=context)
 
             events = tcod.event.wait()
-            engine.handle_events(events)
+            current_state.update(events)
 
 
 if __name__ == "__main__":

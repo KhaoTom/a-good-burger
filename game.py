@@ -1,5 +1,4 @@
 from entity import Entity
-from engine import Engine
 from constants import *
 
 
@@ -7,14 +6,9 @@ def init():
     # patching in custom functionality
     Entity.is_alive = _is_alive
     Entity.melee = _melee
-    Engine.custom_render = _custom_render
 
 
 # Class patches
-
-def _custom_render(self, console):
-    render_statusbar(self, console)
-
 
 def _is_alive(self):
     return self.stats["hp"].current_value > self.stats["hp"].minimum_value
@@ -51,12 +45,3 @@ def kill_entity(target):
     target.blocks_movement = False
     target.name = f"remains of {target.name}"
     target.z = Z_CORPSE
-
-
-def render_statusbar(engine, console):
-    player_hp = engine.player.stats["hp"]
-    console.print(
-        x=1,
-        y=47,
-        string=f"HP: {player_hp.current_value}/{player_hp.maximum_value}",
-    )

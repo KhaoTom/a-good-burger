@@ -1,8 +1,18 @@
-class Engine:
-    def __init__(self, event_dispatcher, game_map, player):
-        self.event_handler = event_dispatcher
-        self.player = player
-        self.game_map = game_map
+from framework import GameState
+
+
+class MainState(GameState):
+    """
+    Main game state, player character is alive and kicking.
+    """
+    event_handler = None
+    player = None
+    game_map = None
+
+    def enter_state(self, data):
+        self.event_handler = data["event_dispatcher"]
+        self.player = data["player"]
+        self.game_map = data["game_map"]
         self.update_fov()
 
     def handle_ai_turns(self):
@@ -10,7 +20,7 @@ class Engine:
         for entity in ai_entities:
             entity.ai.perform(self, entity)
 
-    def handle_events(self, events):
+    def update(self, events):
         for event in events:
             action = self.event_handler.dispatch(event)
 
@@ -29,11 +39,16 @@ class Engine:
     def render(self, console, context):
         self.game_map.render(console)
 
-        self.custom_render(console)
+        self.render_statusbar(console)
 
         context.present(console)
 
         console.clear()
 
-    def custom_render(self, console):
-        pass
+    def render_statusbar(self, console):
+        player_hp = self.player.stats["hp"]
+        console.print(
+            x=1,
+            y=47,
+            string=f"HP: {player_hp.current_value}/{player_hp.maximum_value}",
+        )
