@@ -1,14 +1,14 @@
 from framework.entity import Entity
-from framework.stats import Stat
+from framework.stats import BoundedStat
 from game.action import HostileAction
 from game.constants import *
 
 
 def _make_stats(max_hp, attack, defense):
     stats = {
-        "hp": Stat(0, max_hp, max_hp),
-        "attack": Stat(0, attack, attack),
-        "defense": Stat(0, defense, defense),
+        "hp": BoundedStat(0, max_hp, max_hp),
+        "attack": BoundedStat(0, attack, attack),
+        "defense": BoundedStat(0, defense, defense),
     }
     return stats
 

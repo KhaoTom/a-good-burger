@@ -1,4 +1,5 @@
-class Stat:
+class BoundedStat:
+    """ Stat value with minimum and maximum bounds. """
     def __init__(self, minimum_value, maximum_value, start_value):
         self.minimum_value = minimum_value
         self.maximum_value = maximum_value
