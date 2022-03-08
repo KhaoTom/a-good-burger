@@ -5,9 +5,10 @@ class Engine:
         self.game_map = game_map
         self.update_fov()
 
-    def handle_enemy_turns(self):
-        for entity in self.game_map.entities - {self.player}:
-            print(f'The {entity.name} ponders the meaning of life.')
+    def handle_ai_turns(self):
+        ai_entities = [e for e in self.game_map.entities - {self.player} if e.is_alive() and e.ai]
+        for entity in ai_entities:
+            entity.ai.perform(self, entity)
 
     def handle_events(self, events):
         for event in events:
@@ -18,7 +19,7 @@ class Engine:
 
             action.perform(self, self.player)
 
-            self.handle_enemy_turns()
+            self.handle_ai_turns()
 
             self.update_fov()
 
