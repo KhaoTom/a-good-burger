@@ -1,19 +1,13 @@
 import numpy
+import tcod
 
-graphic_dt = numpy.dtype(
-    [
-        ("ch", numpy.int32),
-        ("fg", "3B"),
-        ("bg", "3B"),
-    ]
-)
 
 tile_dt = numpy.dtype(
     [
         ("walkable", numpy.bool),  # true if tile can be walked over
         ("transparent", numpy.bool),  # true if tile doesnt block fov
-        ("dark", graphic_dt),  # graphic for when tile is not in fov
-        ("light", graphic_dt),  # graphic for when tile is in fov
+        ("dark", tcod.console.rgb_graphic),  # graphic for when tile is not in fov
+        ("light", tcod.console.rgb_graphic),  # graphic for when tile is in fov
     ]
 )
 
@@ -28,7 +22,7 @@ def new_tile(
     return numpy.array((walkable, transparent, dark, light), dtype=tile_dt)
 
 
-unexplored = numpy.array((ord(" "), (255, 255, 255), (0, 0, 0)), dtype=graphic_dt)
+unexplored = numpy.array((ord(" "), (255, 255, 255), (0, 0, 0)), dtype=tcod.console.rgb_graphic)
 
 
 floor = new_tile(
