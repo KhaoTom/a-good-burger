@@ -10,6 +10,12 @@ def init():
     Engine.custom_render = _custom_render
 
 
+# Class patches
+
+def _custom_render(self, console):
+    render_statusbar(self, console)
+
+
 def _is_alive(self):
     return self.stats["hp"].current_value > self.stats["hp"].minimum_value
 
@@ -29,13 +35,15 @@ def _melee(self, target):
         print(f"{attack_desc} for {damage} hit points.")
         target_hp.modify(-damage)
         if target_hp.is_at_minimum():
-            _kill_entity(target)
+            kill_entity(target)
 
     else:
         print(f"{attack_desc} but does no damage.")
 
 
-def _kill_entity(target):
+# Functionality
+
+def kill_entity(target):
     print(f"{target.name.capitalize()} dies.")
     target.ai = None
     target.char = "%"
@@ -45,11 +53,7 @@ def _kill_entity(target):
     target.z = Z_CORPSE
 
 
-def _custom_render(self, console):
-    _render_statusbar(self, console)
-
-
-def _render_statusbar(engine, console):
+def render_statusbar(engine, console):
     player_hp = engine.player.stats["hp"]
     console.print(
         x=1,
