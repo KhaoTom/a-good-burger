@@ -21,7 +21,7 @@ class GameMap:
         return 0 <= x < self.width and 0 <= y < self.height
 
     def render(self, console):
-        console.tiles_rgb[0:self.width, 0:self.height] = numpy.select(
+        console.rgb[0:self.width, 0:self.height] = numpy.select(
             condlist=[self.visible, self.explored],
             choicelist=[self.tiles["light"], self.tiles["dark"]],
             default=self.unexplored_tile
