@@ -1,14 +1,15 @@
 import tcod
 
-import entitytypes
-import game
-from states import MainState
-from eventdispatcher import EventDispatcher
-from mapgen import generate_dungeon
+from game import entitytypes
+from game import hacks
+from game.states import MainState
+from game.eventdispatcher import EventDispatcher
+from framework.mapgen import generate_dungeon
+from framework.tiletype import floor
 
 
 def main():
-    game.init()
+    hacks.apply_patches()
 
     screen_width = 80
     screen_height = 50
@@ -22,7 +23,7 @@ def main():
 
     max_monsters_per_room = 2
 
-    tileset = tcod.tileset.load_tilesheet("dejavu10x10_gs_tc_brighter.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
+    tileset = tcod.tileset.load_tilesheet("assets/dejavu10x10_gs_tc_brighter.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
 
     event_dispatcher = EventDispatcher()
 
@@ -36,6 +37,7 @@ def main():
         map_height=map_height,
         player=player,
         max_monsters_per_room=max_monsters_per_room,
+        floor_tile=floor
     )
 
     states = [MainState()]

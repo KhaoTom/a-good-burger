@@ -1,7 +1,7 @@
-from entity import Entity
-from stats import Stat
-from action import HostileAction
-from constants import *
+from framework.entity import Entity
+from framework.stats import Stat
+from game.action import HostileAction
+from game.constants import *
 
 
 def _make_stats(max_hp, attack, defense):

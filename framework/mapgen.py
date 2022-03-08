@@ -1,8 +1,7 @@
 import random
 import tcod
-import tiletype
-import entitytypes
-from gamemap import GameMap
+from game import entitytypes
+from framework.gamemap import GameMap
 
 
 class RectangularRoom:
@@ -71,7 +70,16 @@ def tunnel_between(start, end):
         yield x, y
 
 
-def generate_dungeon(max_rooms, room_min_size, room_max_size, map_width, map_height, player, max_monsters_per_room):
+def generate_dungeon(
+        max_rooms,
+        room_min_size,
+        room_max_size,
+        map_width,
+        map_height,
+        player,
+        max_monsters_per_room,
+        floor_tile
+):
     """
     Generate a GameMap using basic dungeon digging algorithm.
     :param max_rooms: int
@@ -81,6 +89,7 @@ def generate_dungeon(max_rooms, room_min_size, room_max_size, map_width, map_hei
     :param map_height: int
     :param player: entity with x, y position
     :param max_monsters_per_room: int
+    :param floor_tile: tile to be used as floor
     :return: GameMap
     """
     dungeon = GameMap(map_width, map_height, entities=[player])
@@ -99,13 +108,13 @@ def generate_dungeon(max_rooms, room_min_size, room_max_size, map_width, map_hei
         if any(new_room.intersects(other_room) for other_room in rooms):
             continue
 
-        dungeon.tiles[new_room.inner] = tiletype.floor
+        dungeon.tiles[new_room.inner] = floor_tile
 
         if len(rooms) == 0:
             player.x, player.y = new_room.center
         else:
             for x, y in tunnel_between(rooms[-1].center, new_room.center):
-                dungeon.tiles[x, y] = tiletype.floor
+                dungeon.tiles[x, y] = floor_tile
 
         place_entities(new_room, dungeon, max_monsters_per_room)
 

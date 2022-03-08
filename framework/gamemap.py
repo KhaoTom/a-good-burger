@@ -1,5 +1,5 @@
 import numpy
-import tiletype
+from framework import tiletype
 import tcod
 
 

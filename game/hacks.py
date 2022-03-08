@@ -1,8 +1,10 @@
-from entity import Entity
-from constants import *
+# TODO: Refactor out
+
+from framework.entity import Entity
+from game.constants import *
 
 
-def init():
+def apply_patches():
     # patching in custom functionality
     Entity.is_alive = _is_alive
     Entity.melee = _melee

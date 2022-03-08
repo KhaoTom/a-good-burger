@@ -1,6 +1,5 @@
 import tcod
-import action
-
+from game import action
 
 MOVE_KEYS = {
     # Arrow keys.
