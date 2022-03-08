@@ -6,7 +6,7 @@ class Engine:
         self.update_fov()
 
     def handle_ai_turns(self):
-        ai_entities = [e for e in self.game_map.entities - {self.player} if e.is_alive() and e.ai]
+        ai_entities = [e for e in self.game_map.entities - {self.player} if e.ai]
         for entity in ai_entities:
             entity.ai.perform(self, entity)
 
@@ -29,6 +29,11 @@ class Engine:
     def render(self, console, context):
         self.game_map.render(console)
 
+        self.custom_render(console)
+
         context.present(console)
 
         console.clear()
+
+    def custom_render(self, console):
+        pass

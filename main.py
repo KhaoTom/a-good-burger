@@ -1,12 +1,15 @@
 import tcod
 
 import entitytypes
+import game
 from engine import Engine
 from eventdispatcher import EventDispatcher
 from mapgen import generate_dungeon
 
 
 def main():
+    game.init()
+
     screen_width = 80
     screen_height = 50
 

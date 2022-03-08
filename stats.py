@@ -9,3 +9,9 @@ class Stat:
 
     def modify(self, amount):
         self.current_value = max(self.minimum_value, min(self.current_value + amount, self.maximum_value))
+
+    def is_at_minimum(self):
+        return self.current_value == self.minimum_value
+
+    def is_at_maximum(self):
+        return self.current_value == self.maximum_value

@@ -2,9 +2,10 @@ import copy
 
 
 class Entity:
-    def __init__(self, x, y, char, color, name, blocks_movement, stats, ai):
+    def __init__(self, x, y, z, char, color, name, blocks_movement, stats, ai):
         self.x = x
         self.y = y
+        self.z = z
         self.char = char
         self.color = color
         self.name = name
