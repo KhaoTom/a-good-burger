@@ -78,21 +78,12 @@ def generate_dungeon(
         map_height,
         player,
         max_monsters_per_room,
-        floor_tile
+        floor_tile,
+        wall_tile,
+        unexplored_tile
 ):
-    """
-    Generate a GameMap using basic dungeon digging algorithm.
-    :param max_rooms: int
-    :param room_min_size: int
-    :param room_max_size: int
-    :param map_width: int
-    :param map_height: int
-    :param player: entity with x, y position
-    :param max_monsters_per_room: int
-    :param floor_tile: tile to be used as floor
-    :return: GameMap
-    """
-    dungeon = GameMap(map_width, map_height, entities=[player])
+    """ Basic dungeon generator. """
+    dungeon = GameMap(map_width, map_height, entities=[player], fill_tile=wall_tile, unexplored_tile=unexplored_tile)
 
     rooms: list[RectangularRoom] = []
 

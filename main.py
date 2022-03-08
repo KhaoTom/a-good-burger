@@ -4,8 +4,8 @@ from game import entitytypes
 from game import hacks
 from game.states import MainState
 from game.eventdispatcher import EventDispatcher
-from framework.mapgen import generate_dungeon
-from framework.tiletype import floor
+from game.mapgen import generate_dungeon
+from game.tiletypes import floor, wall, unexplored
 
 
 def main():
@@ -37,7 +37,9 @@ def main():
         map_height=map_height,
         player=player,
         max_monsters_per_room=max_monsters_per_room,
-        floor_tile=floor
+        floor_tile=floor,
+        wall_tile=wall,
+        unexplored_tile=unexplored
     )
 
     states = [MainState()]

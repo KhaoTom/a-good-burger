@@ -1,16 +1,16 @@
 import numpy
-from framework import tiletype
 import tcod
 
 
 class GameMap:
-    def __init__(self, width, height, entities):
+    def __init__(self, width, height, entities, fill_tile, unexplored_tile):
         self.width = width
         self.height = height
-        self.tiles = numpy.full((width, height), fill_value=tiletype.wall, order="F")
+        self.tiles = numpy.full((width, height), fill_value=fill_tile, order="F")
         self.visible = numpy.full((width, height), fill_value=False, order="F")
         self.explored = numpy.full((width, height), fill_value=False, order="F")
         self.entities = set(entities)
+        self.unexplored_tile = unexplored_tile
 
     def get_blocking_entity_at(self, x, y):
         def cond(entity):
@@ -24,7 +24,7 @@ class GameMap:
         console.tiles_rgb[0:self.width, 0:self.height] = numpy.select(
             condlist=[self.visible, self.explored],
             choicelist=[self.tiles["light"], self.tiles["dark"]],
-            default=tiletype.UNEXPLORED
+            default=self.unexplored_tile
         )
 
         entities_sorted_for_rendering = sorted(

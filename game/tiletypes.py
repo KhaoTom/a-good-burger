@@ -28,7 +28,7 @@ def new_tile(
     return numpy.array((walkable, transparent, dark, light), dtype=tile_dt)
 
 
-UNEXPLORED = numpy.array((ord(" "), (255, 255, 255), (0, 0, 0)), dtype=graphic_dt)
+unexplored = numpy.array((ord(" "), (255, 255, 255), (0, 0, 0)), dtype=graphic_dt)
 
 
 floor = new_tile(
