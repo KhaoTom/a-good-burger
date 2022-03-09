@@ -38,7 +38,7 @@ WAIT_KEYS = {
 }
 
 
-class EventDispatcher(tcod.event.EventDispatch[action.Action]):
+class MainEventDispatcher(tcod.event.EventDispatch[action.Action]):
     def ev_quit(self, event: tcod.event.Quit):
         raise SystemExit()
 
@@ -53,6 +53,19 @@ class EventDispatcher(tcod.event.EventDispatch[action.Action]):
             return action.WaitAction()
 
         elif key == tcod.event.K_ESCAPE:
+            return action.EscapeAction()
+
+        return None
+
+
+class GameOverEventDispatcher(tcod.event.EventDispatch[action.Action]):
+    def ev_quit(self, event: tcod.event.Quit):
+        raise SystemExit()
+
+    def ev_keydown(self, event: tcod.event.KeyDown):
+        key = event.sym
+
+        if key == tcod.event.K_ESCAPE:
             return action.EscapeAction()
 
         return None

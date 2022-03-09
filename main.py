@@ -2,10 +2,17 @@ import tcod
 
 from game import entitytypes
 from game import hacks
-from game.states import MainState
-from game.eventdispatcher import EventDispatcher
+from game.states import MainState, GameOverState
 from game.mapgen import generate_dungeon
 from game.tiletypes import floor, wall, unexplored
+
+current_state = None
+
+
+def player_died_callback(killer):
+    global current_state
+    current_state = GameOverState()
+    current_state.enter_state({"killer": killer, "player": current_state.player})
 
 
 def main():
@@ -25,8 +32,6 @@ def main():
 
     tileset = tcod.tileset.load_tilesheet("assets/dejavu10x10_gs_tc_brighter.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
 
-    event_dispatcher = EventDispatcher()
-
     player = entitytypes.player.clone(0, 0)
 
     game_map = generate_dungeon(
@@ -42,16 +47,15 @@ def main():
         unexplored_tile=unexplored
     )
 
-    states = [MainState()]
+    global current_state
+    current_state = MainState()
 
     state_data = {
-        "event_dispatcher": event_dispatcher,
         "game_map": game_map,
-        "player": player
+        "player": player,
+        "player_died_callback": player_died_callback
     }
-    states[0].enter_state(state_data)
-
-    current_state = states[0]
+    current_state.enter_state(state_data)
 
     with tcod.context.new_terminal(
         screen_width,
