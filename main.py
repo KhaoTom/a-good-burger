@@ -55,16 +55,16 @@ def main():
     }
     current_state.enter_state(state_data)
 
-    with tcod.context.new_terminal(
-        screen_width,
-        screen_height,
+    console = tcod.Console(screen_width, screen_height, order="F")
+    with tcod.context.new(
+        columns=console.width,
+        rows=console.height,
         tileset=tileset,
         title="A Good Burger",
         vsync=True,
     ) as context:
-        root_console = tcod.Console(screen_width, screen_height, order="F")
         while True:
-            current_state.render(console=root_console, context=context)
+            current_state.render(console=console, context=context)
 
             events = tcod.event.wait()
             current_state.update(events)
