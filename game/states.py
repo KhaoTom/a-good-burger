@@ -1,5 +1,6 @@
 from framework import GameState
 from game.eventdispatcher import MainEventDispatcher, GameOverEventDispatcher
+from game import *
 
 
 class BaseState(GameState):
@@ -39,7 +40,7 @@ class MainState(BaseState):
         ai_entities = [e for e in self.game_map.entities - {self.player} if e.ai]
         for entity in ai_entities:
             entity.ai.perform(self, entity)
-            if not self.player.is_alive():
+            if not is_alive(self.player):
                 self.player_died_callback(entity)
 
     def state_update(self):

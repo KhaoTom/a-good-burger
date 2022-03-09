@@ -1,27 +1,12 @@
-# TODO: Refactor out
-
-from framework.entity import Entity
-from game.constants import *
+from game import Z_CORPSE
 
 
-def apply_patches():
-    # patching in custom functionality
-    Entity.is_alive = _is_alive
-    Entity.melee = _melee
-
-
-# Class patches
-
-def _is_alive(self):
-    return self.stats["hp"].current_value > self.stats["hp"].minimum_value
-
-
-def _melee(self, target):
-    attack = self.stats["attack"]
+def melee(entity, target):
+    attack = entity.stats["attack"]
     defense = target.stats["defense"]
     damage = attack.current_value - defense.current_value
 
-    attack_desc = f"{self.name.capitalize()} attacks {target.name}"
+    attack_desc = f"{entity.name.capitalize()} attacks {target.name}"
 
     target_hp = target.stats["hp"]
     if target_hp.is_at_minimum():
@@ -31,15 +16,13 @@ def _melee(self, target):
         print(f"{attack_desc} for {damage} hit points.")
         target_hp.modify(-damage)
         if target_hp.is_at_minimum():
-            kill_entity(target)
+            kill(target)
 
     else:
         print(f"{attack_desc} but does no damage.")
 
 
-# Functionality
-
-def kill_entity(target):
+def kill(target):
     print(f"{target.name.capitalize()} dies.")
     target.ai = None
     target.char = "%"
@@ -47,3 +30,12 @@ def kill_entity(target):
     target.blocks_movement = False
     target.name = f"remains of {target.name}"
     target.z = Z_CORPSE
+
+
+def move(entity, delta_x, delta_y):
+    entity.x += delta_x
+    entity.y += delta_y
+
+
+def is_alive(entity):
+    return entity.stats["hp"].current_value > entity.stats["hp"].minimum_value

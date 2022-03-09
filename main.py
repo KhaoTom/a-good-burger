@@ -1,7 +1,6 @@
 import tcod
 
 from game import entitytypes
-from game import hacks
 from game.states import MainState, GameOverState
 from game.mapgen import generate_dungeon
 from game.tiletypes import floor, wall, unexplored
@@ -16,7 +15,6 @@ def player_died_callback(killer):
 
 
 def main():
-    hacks.apply_patches()
 
     screen_width = 80
     screen_height = 50

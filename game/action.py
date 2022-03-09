@@ -1,3 +1,6 @@
+from game import *
+
+
 class Action:
     def perform(self, engine, entity):
         raise NotImplementedError()
@@ -30,9 +33,9 @@ class MovementAction(DirectionalAction):
 
         target = engine.game_map.get_blocking_entity_at(new_x, new_y)
         if target is None:
-            entity.move(self.delta_x, self.delta_y)
+            move(entity, self.delta_x, self.delta_y)
         else:
-            entity.melee(target)
+            melee(entity, target)
 
 
 class WaitAction(Action):
