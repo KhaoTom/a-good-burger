@@ -4,6 +4,7 @@ from game import entitytypes
 from game.states import MainState, GameOverState
 from game.mapgen import generate_dungeon
 from game.tiletypes import floor, wall, unexplored
+from game.render import *
 
 current_state = None
 
@@ -44,6 +45,7 @@ def main():
         wall_tile=wall,
         unexplored_tile=unexplored
     )
+    game_map.update_fov(player.x, player.y)
 
     global current_state
     current_state = MainState()
@@ -64,7 +66,10 @@ def main():
         vsync=True,
     ) as context:
         while True:
-            current_state.render(console=console, context=context)
+            render_map(game_map, console)
+            render_statusbar(player, console)
+
+            context.present(console)
 
             events = tcod.event.wait()
             current_state.update(events)
