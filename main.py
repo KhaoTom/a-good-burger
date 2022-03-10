@@ -1,18 +1,11 @@
 import tcod
 
 from game import entitytypes
-from game.states import MainState, GameOverState
 from game.mapgen import generate_dungeon
 from game.tiletypes import floor, wall, unexplored
 from game.render import *
-
-current_state = None
-
-
-def player_died_callback(killer):
-    global current_state
-    current_state = GameOverState()
-    current_state.enter_state({"killer": killer, "player": current_state.player})
+from game.events import MOVE_KEYS, WAIT_KEYS
+import game
 
 
 def main():
@@ -32,6 +25,7 @@ def main():
     tileset = tcod.tileset.load_tilesheet("assets/dejavu10x10_gs_tc_brighter.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
 
     player = entitytypes.player.clone(0, 0)
+    player_died = False
 
     game_map = generate_dungeon(
         max_rooms=max_rooms,
@@ -46,16 +40,6 @@ def main():
         unexplored_tile=unexplored
     )
     game_map.update_fov(player.x, player.y)
-
-    global current_state
-    current_state = MainState()
-
-    state_data = {
-        "game_map": game_map,
-        "player": player,
-        "player_died_callback": player_died_callback
-    }
-    current_state.enter_state(state_data)
 
     console = tcod.Console(screen_width, screen_height, order="F")
     with tcod.context.new(
@@ -72,7 +56,27 @@ def main():
             context.present(console)
 
             events = tcod.event.wait()
-            current_state.update(events)
+
+            for event in events:
+                context.convert_event(event)  # Add tile coordinates to mouse events.
+                match event:
+                    case tcod.event.Quit():
+                        raise SystemExit()
+
+                    case tcod.event.KeyDown(sym=sym):
+                        if not player_died:
+                            if sym in MOVE_KEYS:
+                                delta_x, delta_y = MOVE_KEYS[sym]
+                                game.handle_movement(game_map, player, delta_x, delta_y)
+                                player_died = game.handle_ai_turns(game_map, player)
+                                game_map.update_fov(player.x, player.y)
+
+                            elif sym in WAIT_KEYS:
+                                player_died = game.handle_ai_turns(game_map, player)
+                                game_map.update_fov(player.x, player.y)
+
+                        if sym == tcod.event.K_ESCAPE:
+                            raise SystemExit()
 
 
 if __name__ == "__main__":

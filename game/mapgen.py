@@ -1,7 +1,7 @@
 import random
 import tcod
 from game import entitytypes
-from framework.gamemap import GameMap
+from game.gamemap import GameMap
 
 
 class RectangularRoom:

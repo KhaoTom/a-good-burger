@@ -39,3 +39,50 @@ def move(entity, delta_x, delta_y):
 
 def is_alive(entity):
     return entity.stats["hp"].current_value > entity.stats["hp"].minimum_value
+
+
+def handle_ai_turns(game_map, player):
+    player_died = False
+    ai_entities = [e for e in game_map.entities - {player} if e.ai]
+    for entity in ai_entities:
+
+        target = player
+        delta_x = target.x - entity.x
+        delta_y = target.y - entity.y
+        distance = max(abs(delta_x), abs(delta_y))  # Chebyshev distance.
+
+        if game_map.visible[entity.x, entity.y]:
+            if distance <= 1:
+                handle_movement(game_map, entity, delta_x, delta_y)
+                continue
+
+            entity.path = game_map.get_path_to(entity, target.x, target.y)
+
+        if entity.path:
+            dest_x, dest_y = entity.path.pop(0)
+            delta_x = dest_x - entity.x
+            delta_y = dest_y - entity.y
+            handle_movement(game_map, entity, delta_x, delta_y)
+            continue
+
+        if not is_alive(player):
+            player_died = True
+            break
+
+    return player_died
+
+
+def handle_movement(game_map, entity, delta_x, delta_y):
+    new_x = entity.x + delta_x
+    new_y = entity.y + delta_y
+
+    if not game_map.in_bounds(new_x, new_y):
+        return
+    if not game_map.tiles["walkable"][new_x, new_y]:
+        return
+
+    target = game_map.get_blocking_entity_at(new_x, new_y)
+    if target is None:
+        move(entity, delta_x, delta_y)
+    else:
+        melee(entity, target)

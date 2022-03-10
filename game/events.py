@@ -1,5 +1,4 @@
 import tcod
-from game import action
 
 MOVE_KEYS = {
     # Arrow keys.
@@ -36,36 +35,3 @@ WAIT_KEYS = {
     tcod.event.K_KP_5,
     tcod.event.K_CLEAR,
 }
-
-
-class MainEventDispatcher(tcod.event.EventDispatch[action.Action]):
-    def ev_quit(self, event: tcod.event.Quit):
-        raise SystemExit()
-
-    def ev_keydown(self, event: tcod.event.KeyDown):
-        key = event.sym
-
-        if key in MOVE_KEYS:
-            dx, dy = MOVE_KEYS[key]
-            return action.MovementAction(dx, dy)
-
-        elif key in WAIT_KEYS:
-            return action.WaitAction()
-
-        elif key == tcod.event.K_ESCAPE:
-            return action.EscapeAction()
-
-        return None
-
-
-class GameOverEventDispatcher(tcod.event.EventDispatch[action.Action]):
-    def ev_quit(self, event: tcod.event.Quit):
-        raise SystemExit()
-
-    def ev_keydown(self, event: tcod.event.KeyDown):
-        key = event.sym
-
-        if key == tcod.event.K_ESCAPE:
-            return action.EscapeAction()
-
-        return None
