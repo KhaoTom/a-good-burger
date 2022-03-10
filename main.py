@@ -1,58 +1,43 @@
 import tcod
-import game
+from game import entitytypes, mapgen, tiletypes, render, keybind, handle_movement, handle_ai_turns, update_fov
 
 
 def main():
+    player = entitytypes.player.clone(0, 0)
 
-    screen_width = 80
-    screen_height = 50
-
-    map_width = 80
-    map_height = 45
-
-    room_max_size = 10
-    room_min_size = 6
-    max_rooms = 30
-
-    max_monsters_per_room = 2
-
-    tileset = tcod.tileset.load_tilesheet("assets/dejavu10x10_gs_tc_brighter.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
-
-    player = game.entitytypes.player.clone(0, 0)
-    player_died = False
-
-    game_map = game.mapgen.generate_dungeon(
-        max_rooms=max_rooms,
-        room_min_size=room_min_size,
-        room_max_size=room_max_size,
-        map_width=map_width,
-        map_height=map_height,
+    game_map = mapgen.generate_dungeon(
+        max_rooms=30,
+        room_min_size=6,
+        room_max_size=10,
+        map_width=80,
+        map_height=45,
         player=player,
-        max_monsters_per_room=max_monsters_per_room,
-        floor_tile=game.tiletypes.floor,
-        wall_tile=game.tiletypes.wall
+        max_monsters_per_room=2,
+        floor_tile=tiletypes.floor,
+        wall_tile=tiletypes.wall
     )
-    game_map.update_fov(player.x, player.y)
+    update_fov(game_map, player.x, player.y)
 
+    player_dead = False
     messages = [['Welcome to "A Good Burger"!']]
     messages_seen = False
 
-    console = tcod.Console(screen_width, screen_height, order="F")
+    console = tcod.Console(80, 50, order="F")
     with tcod.context.new(
         columns=console.width,
         rows=console.height,
-        tileset=tileset,
+        tileset=tcod.tileset.load_tilesheet("assets/dejavu10x10_gs_tc_brighter.png", 32, 8, tcod.tileset.CHARMAP_TCOD),
         title="A Good Burger",
         vsync=True,
     ) as context:
         while True:
             console.clear()
 
-            game.render.render_map(game_map, console)
-            game.render.render_statusbar(player, console)
+            render.render_map(game_map, console)
+            render.render_statusbar(player, console)
 
             if not messages_seen:
-                game.render.render_messagebar(messages, console)
+                render.render_messagebar(messages, console)
 
             context.present(console)
 
@@ -65,27 +50,29 @@ def main():
                         raise SystemExit()
 
                     case tcod.event.KeyDown(sym=sym):
-                        if not player_died:
-                            new_messages = []
-                            move_vector = game.keybind.MOVE_KEYS.get(sym)
-                            if move_vector:
-                                delta_x, delta_y = move_vector
-                                game.handle_movement(game_map, player, delta_x, delta_y, new_messages)
-                                player_died = game.handle_ai_turns(game_map, player, new_messages)
-                                game_map.update_fov(player.x, player.y)
-                                messages_seen = True
-
-                            elif sym in game.keybind.WAIT_KEYS:
-                                player_died = game.handle_ai_turns(game_map, player, new_messages)
-                                game_map.update_fov(player.x, player.y)
-                                messages_seen = True
-
-                            if len(new_messages) > 0:
-                                messages.append(new_messages)
-                                messages_seen = False
-
                         if sym == tcod.event.K_ESCAPE:
                             raise SystemExit()
+
+                        if player_dead:
+                            continue
+
+                        new_messages = []
+                        move_vector = keybind.MOVE_KEYS.get(sym)
+                        if move_vector:
+                            delta_x, delta_y = move_vector
+                            handle_movement(game_map, player, delta_x, delta_y, new_messages)
+                            player_dead = handle_ai_turns(game_map, player, new_messages)
+                            update_fov(game_map, player.x, player.y)
+                            messages_seen = True
+
+                        elif sym in keybind.WAIT_KEYS:
+                            player_dead = handle_ai_turns(game_map, player, new_messages)
+                            update_fov(game_map, player.x, player.y)
+                            messages_seen = True
+
+                        if len(new_messages) > 0:
+                            messages.append(new_messages)
+                            messages_seen = False
 
 
 if __name__ == "__main__":

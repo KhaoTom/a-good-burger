@@ -1,3 +1,6 @@
+import numpy
+import tcod
+
 from game import Z_CORPSE
 
 
@@ -53,7 +56,7 @@ def handle_ai_turns(game_map, player, messages):
                 handle_movement(game_map, entity, delta_x, delta_y, messages)
                 continue
 
-            entity.path = game_map.get_path_to(entity, target.x, target.y)
+            entity.path = get_path_to(game_map, entity, target.x, target.y)
 
         if entity.path:
             dest_x, dest_y = entity.path.pop(0)
@@ -70,16 +73,43 @@ def handle_ai_turns(game_map, player, messages):
 
 
 def handle_movement(game_map, entity, delta_x, delta_y, messages):
-    new_x = entity.x + delta_x
-    new_y = entity.y + delta_y
+    destination_x = entity.x + delta_x
+    destination_y = entity.y + delta_y
 
-    if not game_map.in_bounds(new_x, new_y):
+    if not (0 <= destination_x < game_map.width and 0 <= destination_y < game_map.height):
         return
-    if not game_map.tiles["walkable"][new_x, new_y]:
+    if not game_map.tiles["walkable"][destination_x, destination_y]:
         return
 
-    target = game_map.get_blocking_entity_at(new_x, new_y)
-    if target is None:
+    def entity_is_blocking_destination(_e):
+        return _e.blocks_movement and _e.x == destination_x and _e.y == destination_y
+
+    blocking_entity = next(filter(entity_is_blocking_destination, game_map.entities), None)
+
+    if blocking_entity is None:
         move(entity, delta_x, delta_y)
     else:
-        melee(entity, target, messages)
+        melee(entity, blocking_entity, messages)
+
+
+def get_path_to(gamemap, acting_entity, dest_x, dest_y):
+    cost = numpy.array(gamemap.tiles["walkable"], dtype=numpy.int8)
+
+    for entity in gamemap.entities:
+        if entity.blocks_movement and cost[entity.x, entity.y]:
+            cost[entity.x, entity.y] += 10
+
+    graph = tcod.path.SimpleGraph(cost=cost, cardinal=2, diagonal=3)
+    pathfinder = tcod.path.Pathfinder(graph)
+    pathfinder.add_root((acting_entity.x, acting_entity.y))
+    path = pathfinder.path_to((dest_x, dest_y))[1:].tolist()
+    return path
+
+
+def update_fov(gamemap, x, y):
+    gamemap.visible[:] = tcod.map.compute_fov(
+        gamemap.tiles["transparent"],
+        (x, y),
+        radius=8
+    )
+    gamemap.explored |= gamemap.visible
