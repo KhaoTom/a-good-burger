@@ -2,37 +2,51 @@ import random
 import tcod
 from game import entitytypes
 from game.gamemap import GameMap
+from game.rectangle import *
 
 
-class RectangularRoom:
-    def __init__(self, x, y, width, height):
-        self.x1 = x
-        self.y1 = y
-        self.x2 = x + width
-        self.y2 = y + height
+def generate_dungeon(
+        max_rooms,
+        room_min_size,
+        room_max_size,
+        map_width,
+        map_height,
+        player,
+        max_monsters_per_room,
+        floor_tile,
+        wall_tile,
+        unexplored_tile
+):
+    """ Basic dungeon generator. """
+    dungeon = GameMap(map_width, map_height, entities=[player], fill_tile=wall_tile, unexplored_tile=unexplored_tile)
 
-    @property
-    def center(self):
-        center_x = int((self.x1 + self.x2) / 2)
-        center_y = int((self.y1 + self.y2) / 2)
-        return center_x, center_y
+    rooms: list[Rectangle] = []
 
-    @property
-    def inner(self):
-        return slice(self.x1+1, self.x2), slice(self.y1+1, self.y2)
+    for r in range(max_rooms):
+        room_width = random.randint(room_min_size, room_max_size)
+        room_height = random.randint(room_min_size, room_max_size)
 
-    def intersects(self, other):
-        """
-        True if this room intersects other room
-        :param other: room-like with x1, y1, x2, y2 positions
-        :return: Bool
-        """
-        return (
-            self.x1 <= other.x2
-            and self.x2 >= other.x1
-            and self.y1 <= other.y2
-            and self.y2 >= other.y1
-        )
+        x = random.randint(0, dungeon.width - room_width - 1)
+        y = random.randint(0, dungeon.height - room_height - 1)
+
+        new_room = Rectangle(x, y, room_width, room_height)
+
+        if any(intersects(new_room, other_room) for other_room in rooms):
+            continue
+
+        dungeon.tiles[inner(new_room)] = floor_tile
+
+        if len(rooms) == 0:
+            player.x, player.y = center(new_room)
+        else:
+            for x, y in tunnel_between(center(rooms[-1]), center(new_room)):
+                dungeon.tiles[x, y] = floor_tile
+
+        place_entities(new_room, dungeon, max_monsters_per_room)
+
+        rooms.append(new_room)
+
+    return dungeon
 
 
 def place_entities(room, dungeon, maximum_monsters):
@@ -68,47 +82,3 @@ def tunnel_between(start, end):
         yield x, y
     for x, y in tcod.los.bresenham((corner_x, corner_y), (x2, y2)).tolist():
         yield x, y
-
-
-def generate_dungeon(
-        max_rooms,
-        room_min_size,
-        room_max_size,
-        map_width,
-        map_height,
-        player,
-        max_monsters_per_room,
-        floor_tile,
-        wall_tile,
-        unexplored_tile
-):
-    """ Basic dungeon generator. """
-    dungeon = GameMap(map_width, map_height, entities=[player], fill_tile=wall_tile, unexplored_tile=unexplored_tile)
-
-    rooms: list[RectangularRoom] = []
-
-    for r in range(max_rooms):
-        room_width = random.randint(room_min_size, room_max_size)
-        room_height = random.randint(room_min_size, room_max_size)
-
-        x = random.randint(0, dungeon.width - room_width - 1)
-        y = random.randint(0, dungeon.height - room_height - 1)
-
-        new_room = RectangularRoom(x, y, room_width, room_height)
-
-        if any(new_room.intersects(other_room) for other_room in rooms):
-            continue
-
-        dungeon.tiles[new_room.inner] = floor_tile
-
-        if len(rooms) == 0:
-            player.x, player.y = new_room.center
-        else:
-            for x, y in tunnel_between(rooms[-1].center, new_room.center):
-                dungeon.tiles[x, y] = floor_tile
-
-        place_entities(new_room, dungeon, max_monsters_per_room)
-
-        rooms.append(new_room)
-
-    return dungeon
