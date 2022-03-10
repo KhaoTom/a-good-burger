@@ -30,8 +30,7 @@ def main():
         player=player,
         max_monsters_per_room=max_monsters_per_room,
         floor_tile=game.tiletypes.floor,
-        wall_tile=game.tiletypes.wall,
-        unexplored_tile=game.tiletypes.unexplored
+        wall_tile=game.tiletypes.wall
     )
     game_map.update_fov(player.x, player.y)
 

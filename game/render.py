@@ -1,11 +1,12 @@
 import numpy
+from game.tiletypes import unexplored
 
 
 def render_map(game_map, console):
     console.rgb[0:game_map.width, 0:game_map.height] = numpy.select(
         condlist=[game_map.visible, game_map.explored],
         choicelist=[game_map.tiles["light"], game_map.tiles["dark"]],
-        default=game_map.unexplored_tile
+        default=unexplored
     )
 
     entities_sorted_for_rendering = sorted(

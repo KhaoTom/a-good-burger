@@ -14,11 +14,10 @@ def generate_dungeon(
         player,
         max_monsters_per_room,
         floor_tile,
-        wall_tile,
-        unexplored_tile
+        wall_tile
 ):
     """ Basic dungeon generator. """
-    dungeon = GameMap(map_width, map_height, entities=[player], fill_tile=wall_tile, unexplored_tile=unexplored_tile)
+    dungeon = GameMap(map_width, map_height, entities=[player], fill_tile=wall_tile)
 
     rooms: list[Rectangle] = []
 
