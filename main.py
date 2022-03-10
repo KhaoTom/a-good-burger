@@ -34,6 +34,9 @@ def main():
     )
     game_map.update_fov(player.x, player.y)
 
+    messages = [['Welcome to "A Good Burger"!']]
+    messages_seen = False
+
     console = tcod.Console(screen_width, screen_height, order="F")
     with tcod.context.new(
         columns=console.width,
@@ -43,8 +46,13 @@ def main():
         vsync=True,
     ) as context:
         while True:
+            console.clear()
+
             game.render.render_map(game_map, console)
             game.render.render_statusbar(player, console)
+
+            if not messages_seen:
+                game.render.render_messagebar(messages, console)
 
             context.present(console)
 
@@ -58,16 +66,23 @@ def main():
 
                     case tcod.event.KeyDown(sym=sym):
                         if not player_died:
+                            new_messages = []
                             move_vector = game.keybind.MOVE_KEYS.get(sym)
                             if move_vector:
                                 delta_x, delta_y = move_vector
-                                game.handle_movement(game_map, player, delta_x, delta_y)
-                                player_died = game.handle_ai_turns(game_map, player)
+                                game.handle_movement(game_map, player, delta_x, delta_y, new_messages)
+                                player_died = game.handle_ai_turns(game_map, player, new_messages)
                                 game_map.update_fov(player.x, player.y)
+                                messages_seen = True
 
                             elif sym in game.keybind.WAIT_KEYS:
-                                player_died = game.handle_ai_turns(game_map, player)
+                                player_died = game.handle_ai_turns(game_map, player, new_messages)
                                 game_map.update_fov(player.x, player.y)
+                                messages_seen = True
+
+                            if len(new_messages) > 0:
+                                messages.append(new_messages)
+                                messages_seen = False
 
                         if sym == tcod.event.K_ESCAPE:
                             raise SystemExit()

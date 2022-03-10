@@ -24,3 +24,16 @@ def render_statusbar(player, console):
         y=47,
         string=f"HP: {player.hp.current_value}/{player.hp.maximum_value}",
     )
+
+
+def render_messagebar(messages, console):
+    last_messages = messages[-1]
+    if len(last_messages) > 1:
+        string = f"> {last_messages[-1]} (M key for more.)"
+    else:
+        string = f"> {last_messages[-1]}"
+    console.print(
+        x=1,
+        y=48,
+        string=string
+    )

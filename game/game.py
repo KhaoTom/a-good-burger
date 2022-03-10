@@ -1,26 +1,26 @@
 from game import Z_CORPSE
 
 
-def melee(entity, target):
+def melee(entity, target, messages):
     damage = entity.attack.current_value - target.defense.current_value
 
     attack_desc = f"{entity.name.capitalize()} attacks {target.name}"
 
     if target.hp.is_at_minimum():
-        print(f"{attack_desc}. It's already dead!")
+        messages.append(f"{attack_desc}. It's already dead!")
 
     elif damage > 0:
-        print(f"{attack_desc} for {damage} hit points.")
+        messages.append(f"{attack_desc} for {damage} hit points.")
         target.hp.modify(-damage)
         if target.hp.is_at_minimum():
+            messages.append(f"{target.name.capitalize()} dies.")
             kill(target)
 
     else:
-        print(f"{attack_desc} but does no damage.")
+        messages.append(f"{attack_desc} but does no damage.")
 
 
 def kill(target):
-    print(f"{target.name.capitalize()} dies.")
     target.ai = False
     target.char = "%"
     target.color = (191, 0, 0)
@@ -38,7 +38,7 @@ def is_alive(entity):
     return entity.hp.current_value > entity.hp.minimum_value
 
 
-def handle_ai_turns(game_map, player):
+def handle_ai_turns(game_map, player, messages):
     player_died = False
     ai_entities = [e for e in game_map.entities - {player} if e.ai]
     for entity in ai_entities:
@@ -50,7 +50,7 @@ def handle_ai_turns(game_map, player):
 
         if game_map.visible[entity.x, entity.y]:
             if distance <= 1:
-                handle_movement(game_map, entity, delta_x, delta_y)
+                handle_movement(game_map, entity, delta_x, delta_y, messages)
                 continue
 
             entity.path = game_map.get_path_to(entity, target.x, target.y)
@@ -59,7 +59,7 @@ def handle_ai_turns(game_map, player):
             dest_x, dest_y = entity.path.pop(0)
             delta_x = dest_x - entity.x
             delta_y = dest_y - entity.y
-            handle_movement(game_map, entity, delta_x, delta_y)
+            handle_movement(game_map, entity, delta_x, delta_y, messages)
             continue
 
         if not is_alive(player):
@@ -69,7 +69,7 @@ def handle_ai_turns(game_map, player):
     return player_died
 
 
-def handle_movement(game_map, entity, delta_x, delta_y):
+def handle_movement(game_map, entity, delta_x, delta_y, messages):
     new_x = entity.x + delta_x
     new_y = entity.y + delta_y
 
@@ -82,4 +82,4 @@ def handle_movement(game_map, entity, delta_x, delta_y):
     if target is None:
         move(entity, delta_x, delta_y)
     else:
-        melee(entity, target)
+        melee(entity, target, messages)
