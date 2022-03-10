@@ -20,21 +20,6 @@ class GameMap:
     def in_bounds(self, x, y):
         return 0 <= x < self.width and 0 <= y < self.height
 
-    def render(self, console):
-        console.rgb[0:self.width, 0:self.height] = numpy.select(
-            condlist=[self.visible, self.explored],
-            choicelist=[self.tiles["light"], self.tiles["dark"]],
-            default=self.unexplored_tile
-        )
-
-        entities_sorted_for_rendering = sorted(
-            self.entities, key=lambda e: e.z
-        )
-
-        for entity in entities_sorted_for_rendering:
-            if self.visible[entity.x, entity.y]:
-                console.print(x=entity.x, y=entity.y, string=entity.char, fg=entity.color)
-
     def update_fov(self, x, y):
         self.visible[:] = tcod.map.compute_fov(
             self.tiles["transparent"],
