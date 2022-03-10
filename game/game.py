@@ -21,7 +21,7 @@ def melee(entity, target):
 
 def kill(target):
     print(f"{target.name.capitalize()} dies.")
-    target.ai = None
+    target.ai = False
     target.char = "%"
     target.color = (191, 0, 0)
     target.blocks_movement = False
