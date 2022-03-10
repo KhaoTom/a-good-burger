@@ -1,4 +1,3 @@
-from .constants import *
 from .game import *
 import game.entitytypes
 import game.gamemap

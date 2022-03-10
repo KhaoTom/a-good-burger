@@ -1,5 +1,5 @@
 from game.entity import Entity
-from game.constants import *
+from game import Z_PLAYER, Z_NPC
 
 
 player = Entity(0, 0, Z_PLAYER, "@", (255, 255, 255), "Player", True, 30, 5, 2, False, None)

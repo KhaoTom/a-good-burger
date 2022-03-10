@@ -1,7 +1,9 @@
 import numpy
 import tcod
 
-from game import Z_CORPSE
+Z_PLAYER = 100
+Z_NPC = 50
+Z_CORPSE = 1
 
 
 def melee(entity, target, messages):
