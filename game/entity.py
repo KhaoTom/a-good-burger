@@ -2,7 +2,7 @@ import copy
 
 
 class Entity:
-    def __init__(self, x, y, z, char, color, name, blocks_movement, stats, ai, path):
+    def __init__(self, x, y, z, char, color, name, blocks_movement, hp, attack, defense, ai, path):
         self.x = x
         self.y = y
         self.z = z
@@ -10,7 +10,9 @@ class Entity:
         self.color = color
         self.name = name
         self.blocks_movement = blocks_movement
-        self.stats = stats
+        self.hp = BoundedStat(0, hp, hp)
+        self.attack = BoundedStat(0, attack, attack)
+        self.defense = BoundedStat(0, defense, defense)
         self.ai = ai
         self.path = path
 
@@ -19,3 +21,23 @@ class Entity:
         clone.x = x
         clone.y = y
         return clone
+
+
+class BoundedStat:
+    """ Stat value with minimum and maximum bounds. """
+    def __init__(self, minimum_value, maximum_value, start_value):
+        self.minimum_value = minimum_value
+        self.maximum_value = maximum_value
+        self.current_value = start_value
+
+    def __repr__(self):
+        return f"Stat({self.minimum_value}, {self.maximum_value}, {self.current_value})"
+
+    def modify(self, amount):
+        self.current_value = max(self.minimum_value, min(self.current_value + amount, self.maximum_value))
+
+    def is_at_minimum(self):
+        return self.current_value == self.minimum_value
+
+    def is_at_maximum(self):
+        return self.current_value == self.maximum_value

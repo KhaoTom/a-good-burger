@@ -2,20 +2,17 @@ from game import Z_CORPSE
 
 
 def melee(entity, target):
-    attack = entity.stats["attack"]
-    defense = target.stats["defense"]
-    damage = attack.current_value - defense.current_value
+    damage = entity.attack.current_value - target.defense.current_value
 
     attack_desc = f"{entity.name.capitalize()} attacks {target.name}"
 
-    target_hp = target.stats["hp"]
-    if target_hp.is_at_minimum():
+    if target.hp.is_at_minimum():
         print(f"{attack_desc}. It's already dead!")
 
     elif damage > 0:
         print(f"{attack_desc} for {damage} hit points.")
-        target_hp.modify(-damage)
-        if target_hp.is_at_minimum():
+        target.hp.modify(-damage)
+        if target.hp.is_at_minimum():
             kill(target)
 
     else:
@@ -38,7 +35,7 @@ def move(entity, delta_x, delta_y):
 
 
 def is_alive(entity):
-    return entity.stats["hp"].current_value > entity.stats["hp"].minimum_value
+    return entity.hp.current_value > entity.hp.minimum_value
 
 
 def handle_ai_turns(game_map, player):
