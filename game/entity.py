@@ -25,17 +25,17 @@ def spawn(entity_name, x, y):
 
 def melee(entity, target):
     messages = []
-    damage = entity.attack.current_value - target.defense.current_value
+    damage = entity.attack - target.defense
 
     attack_desc = f"{entity.name.capitalize()} attacks {target.name}"
 
-    if target.hp.is_at_minimum():
+    if target.hp <= 0:
         messages.append(f"{attack_desc}. It's already dead!")
 
     elif damage > 0:
         messages.append(f"{attack_desc} for {damage} hit points.")
-        target.hp.modify(-damage)
-        if target.hp.is_at_minimum():
+        target.hp -= damage
+        if target.hp <= 0:
             messages.append(f"{target.name.capitalize()} dies.")
             kill(target)
 
@@ -60,5 +60,5 @@ def move(entity, delta_x, delta_y):
 
 
 def is_alive(entity):
-    return entity.hp.current_value > entity.hp.minimum_value
+    return entity.hp > 0
 
