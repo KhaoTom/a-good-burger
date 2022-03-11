@@ -1,7 +1,6 @@
-from .game import *
-import game.entitytypes
-import game.gamemap
-import game.mapgen
-import game.render
+import game.datatypes
+import game.dungeon
+import game.entity
 import game.keybind
+import game.render
 import game.tiletypes
