@@ -16,6 +16,12 @@ class Entity:
         self.ai = ai
         self.path = path
 
+    def __repr__(self):
+        return f"Entity({self.x}, {self.y}, {self.z}, " \
+               f"{self.char}, {self.color}, {self.name}, " \
+               f"{self.blocks_movement}, {self.hp}, {self.attack}, {self.defense}, " \
+               f"{self.ai}, {self.path})"
+
     def clone(self, x, y):
         clone = copy.deepcopy(self)
         clone.x = x
