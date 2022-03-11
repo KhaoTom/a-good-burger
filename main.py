@@ -60,6 +60,11 @@ def main():
                         if sym == tcod.event.K_ESCAPE:
                             raise SystemExit()
 
+                        if sym == tcod.event.K_BACKSPACE:
+                            message_index = message_index - 1 if abs(message_index) < len(messages) else -len(messages)
+                            messages_seen = False
+                            continue
+
                         if not is_alive(player):
                             continue
 
