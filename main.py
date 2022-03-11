@@ -41,7 +41,7 @@ def main():
             console.clear()
 
             render_map(dungeon, console)
-            render_statusbar(player, console)
+            render_statusbar(player, turn_count, console)
 
             if not messages_seen:
                 render_messagebar(messages, message_index, console)
