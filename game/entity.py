@@ -23,7 +23,8 @@ def spawn(entity_name, x, y):
     return clone
 
 
-def melee(entity, target, messages):
+def melee(entity, target):
+    messages = []
     damage = entity.attack.current_value - target.defense.current_value
 
     attack_desc = f"{entity.name.capitalize()} attacks {target.name}"
@@ -40,6 +41,8 @@ def melee(entity, target, messages):
 
     else:
         messages.append(f"{attack_desc} but does no damage.")
+
+    return messages
 
 
 def kill(entity):

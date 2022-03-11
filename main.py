@@ -1,7 +1,7 @@
 import tcod
 from game import tiletypes
 from game.dungeon import generate_dungeon, update_fov
-from game.entity import spawn
+from game.entity import spawn, is_alive
 from game.keybind import MOVE_KEYS, WAIT_KEYS
 from game.render import render_map, render_messagebar, render_statusbar
 from game.simulation import process_turn
@@ -23,9 +23,11 @@ def main():
     )
     update_fov(dungeon, player.x, player.y)
 
-    player_dead = False
-    messages = [['Welcome to "A Good Burger"!']]
+    messages = ['Welcome to "A Good Burger"!']
     messages_seen = False
+    message_index = -1
+
+    turn_count = 0
 
     console = tcod.Console(80, 50, order="F")
     with tcod.context.new(
@@ -42,7 +44,7 @@ def main():
             render_statusbar(player, console)
 
             if not messages_seen:
-                render_messagebar(messages, console)
+                render_messagebar(messages, message_index, console)
 
             context.present(console)
 
@@ -58,23 +60,26 @@ def main():
                         if sym == tcod.event.K_ESCAPE:
                             raise SystemExit()
 
-                        if player_dead:
+                        if not is_alive(player):
                             continue
 
                         new_messages = []
                         move_vector = MOVE_KEYS.get(sym)
                         if move_vector:
-                            player_dead = process_turn(dungeon, player, move_vector, new_messages)
+                            new_messages += process_turn(dungeon, player, move_vector, turn_count)
                             update_fov(dungeon, player.x, player.y)
                             messages_seen = True
+                            turn_count += 1
 
                         elif sym in WAIT_KEYS:
-                            player_dead = process_turn(dungeon, player, None, new_messages)
+                            new_messages += process_turn(dungeon, player, None, turn_count)
                             update_fov(dungeon, player.x, player.y)
                             messages_seen = True
+                            turn_count += 1
 
                         if len(new_messages) > 0:
-                            messages.append(new_messages)
+                            messages += new_messages
+                            message_index = -1
                             messages_seen = False
 
 

@@ -26,14 +26,10 @@ def render_statusbar(player, console):
     )
 
 
-def render_messagebar(messages, console):
-    last_messages = messages[-1]
-    if len(last_messages) > 1:
-        string = f"> {last_messages[-1]} (M key for more.)"
-    else:
-        string = f"> {last_messages[-1]}"
+def render_messagebar(messages, index, console):
+    msg = messages[index]
     console.print(
         x=1,
         y=48,
-        string=string
+        string=f"{msg}"
     )
