@@ -33,7 +33,7 @@ def main():
     with tcod.context.new(
         columns=console.width,
         rows=console.height,
-        tileset=tcod.tileset.load_tilesheet("assets/dejavu10x10_gs_tc_brighter.png", 32, 8, tcod.tileset.CHARMAP_TCOD),
+        tileset=tcod.tileset.load_tilesheet("assets/Tiles_12x12.png", 16, 16, tcod.tileset.CHARMAP_CP437),
         title="A Good Burger",
         vsync=True,
     ) as context:
