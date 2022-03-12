@@ -12,7 +12,7 @@ def generate_dungeon(
         map_width,
         map_height,
         player,
-        max_monsters_per_room,
+        max_entities_per_room,
         floor_tile,
         wall_tile
 ):
@@ -48,22 +48,22 @@ def generate_dungeon(
             for x, y in tunnel_between(rectangle_center(rooms[-1]), rectangle_center(new_room)):
                 dungeon.tiles[x, y] = floor_tile
 
-        place_entities(new_room, dungeon, max_monsters_per_room)
+        place_entities(new_room, dungeon, max_entities_per_room)
 
         rooms.append(new_room)
 
     return dungeon
 
 
-def place_entities(room, dungeon, maximum_monsters):
-    number_of_monsters = random.randint(0, maximum_monsters)
+def place_entities(room, dungeon, max_entities_to_place):
+    number_of_placement_attempts = random.randint(0, max_entities_to_place)
 
-    for i in range(number_of_monsters):
+    for i in range(number_of_placement_attempts):
         x = random.randint(room.x1 + 1, room.x2 - 1)
         y = random.randint(room.y1 + 1, room.y2 - 1)
 
         if not any(entity.x == x and entity.y == y for entity in dungeon.entities):
-            entity_chosen = random.choices(['orc', 'troll'], weights=[4, 1], k=1)[0]
+            entity_chosen = random.choices(['orc', 'troll', 'patty'], weights=[4, 1, 1], k=1)[0]
             dungeon.entities.add(spawn(entity_chosen, x, y))
 
 

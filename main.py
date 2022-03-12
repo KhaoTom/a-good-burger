@@ -17,7 +17,7 @@ def main():
         map_width=80,
         map_height=45,
         player=player,
-        max_monsters_per_room=2,
+        max_entities_per_room=3,
         floor_tile=tiletypes.floor,
         wall_tile=tiletypes.wall
     )
