@@ -2,7 +2,7 @@ import tcod
 from game import tiletypes
 from game.dungeon import generate_dungeon, update_fov
 from game.entity import spawn, is_alive
-from game.keybind import MOVE_KEYS, WAIT_KEYS
+from game.keybind import KEYBINDS
 from game.render import render_map, render_messagebar, render_statusbar
 from game.simulation import process_turn
 
@@ -57,10 +57,14 @@ def main():
                         raise SystemExit()
 
                     case tcod.event.KeyDown(sym=sym):
-                        if sym == tcod.event.K_ESCAPE:
+                        action = KEYBINDS.get(sym)
+                        if action is None:
+                            continue
+
+                        if action == "EXIT":
                             raise SystemExit()
 
-                        if sym == tcod.event.K_BACKSPACE:
+                        if action == "SCROLL_MESSAGES":
                             message_index = message_index - 1 if abs(message_index) < len(messages) else -len(messages)
                             messages_seen = False
                             continue
@@ -69,18 +73,10 @@ def main():
                             continue
 
                         new_messages = []
-                        move_vector = MOVE_KEYS.get(sym)
-                        if move_vector:
-                            new_messages += process_turn(dungeon, player, move_vector, turn_count)
-                            update_fov(dungeon, player.x, player.y)
-                            messages_seen = True
-                            turn_count += 1
-
-                        elif sym in WAIT_KEYS:
-                            new_messages += process_turn(dungeon, player, None, turn_count)
-                            update_fov(dungeon, player.x, player.y)
-                            messages_seen = True
-                            turn_count += 1
+                        new_messages += process_turn(dungeon, player, action, turn_count)
+                        update_fov(dungeon, player.x, player.y)
+                        messages_seen = True
+                        turn_count += 1
 
                         if len(new_messages) > 0:
                             messages += new_messages

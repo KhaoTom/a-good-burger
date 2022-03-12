@@ -2,10 +2,10 @@ from game.dungeon import get_path_to
 from game.entity import is_alive, move, melee
 
 
-def process_turn(dungeon, player, player_move, turn_count):
+def process_turn(dungeon, player, player_action, turn_count):
     messages = []
-    match player_move:
-        case None:
+    match player_action:
+        case "WAIT":
             messages += [f"{turn_count}: {msg}" for msg in handle_ai_turns(dungeon, player)]
         case (delta_x, delta_y):
             messages += [f"{turn_count}: {msg}" for msg in handle_movement(dungeon, player, delta_x, delta_y)]
