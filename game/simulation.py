@@ -69,14 +69,17 @@ def handle_movement(dungeon, entity, delta_x, delta_y):
 
     entities_at_destination = list(filter(entity_at_destination, dungeon.entities))
     if entities_at_destination:
+        def by_z_descending(_e):
+            return -_e.z
+        entities_at_destination.sort(key=by_z_descending)
 
         def entity_is_blocking_destination(_e):
             return _e.blocks_movement
-
         blocking_entity = next(filter(entity_is_blocking_destination, entities_at_destination), None)
 
         if blocking_entity is None:
             move(entity, delta_x, delta_y)
+            messages.append(f"There is a {entities_at_destination[0].name} here.")
         else:
             messages += melee(entity, blocking_entity)
     else:
