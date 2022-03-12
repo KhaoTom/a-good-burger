@@ -64,14 +64,22 @@ def handle_movement(dungeon, entity, delta_x, delta_y):
     if not dungeon.tiles["walkable"][destination_x, destination_y]:
         return False, messages
 
-    def entity_is_blocking_destination(_e):
-        return _e.blocks_movement and _e.x == destination_x and _e.y == destination_y
+    def entity_at_destination(_e):
+        return _e.x == destination_x and _e.y == destination_y
 
-    blocking_entity = next(filter(entity_is_blocking_destination, dungeon.entities), None)
+    entities_at_destination = list(filter(entity_at_destination, dungeon.entities))
+    if entities_at_destination:
 
-    if blocking_entity is None:
-        move(entity, delta_x, delta_y)
+        def entity_is_blocking_destination(_e):
+            return _e.blocks_movement
+
+        blocking_entity = next(filter(entity_is_blocking_destination, entities_at_destination), None)
+
+        if blocking_entity is None:
+            move(entity, delta_x, delta_y)
+        else:
+            messages += melee(entity, blocking_entity)
     else:
-        messages += melee(entity, blocking_entity)
+        move(entity, delta_x, delta_y)
 
     return True, messages
