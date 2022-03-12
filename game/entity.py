@@ -5,13 +5,17 @@ from game.datatypes import Entity
 
 Z_PLAYER = 100
 Z_NPC = 50
+Z_ITEM = 10
 Z_CORPSE = 1
 
 
 entity_templates = {
     "player": Entity(0, 0, Z_PLAYER, "@", (255, 255, 255), "Player", True, 30, 5, 2, False, None),
+    # monsters
     "orc": Entity(0, 0, Z_NPC, "o", (63, 127, 63), "Orc", True, 10, 3, 0, True, None),
     "troll": Entity(0, 0, Z_NPC, "T", (0, 127, 0), "Troll", True, 16, 4, 1, True, None),
+    # items
+    "patty": Entity(0, 0, Z_ITEM, "$", (100, 100, 50), "burger patty", False, 4, 0, 0, False, None),
 }
 
 
