@@ -4,13 +4,21 @@ from game.entity import is_alive, move, melee
 
 def process_turn(dungeon, player, player_action, turn_count):
     messages = []
+    turn_processed = False
+
     match player_action:
         case "WAIT":
             messages += [f"{turn_count}: {msg}" for msg in handle_ai_turns(dungeon, player)]
+            turn_processed = True
+
         case (delta_x, delta_y):
-            messages += [f"{turn_count}: {msg}" for msg in handle_movement(dungeon, player, delta_x, delta_y)]
-            messages += [f"{turn_count}: {msg}" for msg in handle_ai_turns(dungeon, player)]
-    return messages
+            is_valid_move, move_msgs = handle_movement(dungeon, player, delta_x, delta_y)
+            messages += [f"{turn_count}: {msg}" for msg in move_msgs]
+            if is_valid_move:
+                messages += [f"{turn_count}: {msg}" for msg in handle_ai_turns(dungeon, player)]
+                turn_processed = True
+
+    return turn_processed, messages
 
 
 def handle_ai_turns(dungeon, player):
@@ -25,7 +33,8 @@ def handle_ai_turns(dungeon, player):
 
         if dungeon.visible[entity.x, entity.y]:
             if distance <= 1:
-                messages += handle_movement(dungeon, entity, delta_x, delta_y)
+                _, msgs = handle_movement(dungeon, entity, delta_x, delta_y)
+                messages += msgs
                 continue
 
             entity.path = get_path_to(dungeon, entity, target.x, target.y)
@@ -34,7 +43,8 @@ def handle_ai_turns(dungeon, player):
             dest_x, dest_y = entity.path.pop(0)
             delta_x = dest_x - entity.x
             delta_y = dest_y - entity.y
-            messages += handle_movement(dungeon, entity, delta_x, delta_y)
+            _, msgs = handle_movement(dungeon, entity, delta_x, delta_y)
+            messages += msgs
             continue
 
         if not is_alive(player):
@@ -50,9 +60,9 @@ def handle_movement(dungeon, entity, delta_x, delta_y):
     destination_y = entity.y + delta_y
 
     if not (0 <= destination_x < dungeon.width and 0 <= destination_y < dungeon.height):
-        return messages
+        return False, messages
     if not dungeon.tiles["walkable"][destination_x, destination_y]:
-        return messages
+        return False, messages
 
     def entity_is_blocking_destination(_e):
         return _e.blocks_movement and _e.x == destination_x and _e.y == destination_y
@@ -64,4 +74,4 @@ def handle_movement(dungeon, entity, delta_x, delta_y):
     else:
         messages += melee(entity, blocking_entity)
 
-    return messages
+    return True, messages

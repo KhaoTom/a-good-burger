@@ -72,11 +72,11 @@ def main():
                         if not is_alive(player):
                             continue
 
-                        new_messages = []
-                        new_messages += process_turn(dungeon, player, action, turn_count)
-                        update_fov(dungeon, player.x, player.y)
-                        messages_seen = True
-                        turn_count += 1
+                        turn_processed, new_messages = process_turn(dungeon, player, action, turn_count)
+                        if turn_processed:
+                            update_fov(dungeon, player.x, player.y)
+                            messages_seen = True
+                            turn_count += 1
 
                         if len(new_messages) > 0:
                             messages += new_messages
