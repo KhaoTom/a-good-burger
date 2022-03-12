@@ -24,7 +24,7 @@ def main():
     update_fov(dungeon, player.x, player.y)
 
     messages = ['Welcome to "A Good Burger"!']
-    messages_seen = False
+    show_message_on_next_render = True
     message_index = -1
 
     turn_count = 0
@@ -43,7 +43,7 @@ def main():
             render_map(dungeon, console)
             render_statusbar(player, turn_count, console)
 
-            if not messages_seen:
+            if show_message_on_next_render:
                 render_messagebar(messages, message_index, console)
 
             context.present(console)
@@ -66,7 +66,7 @@ def main():
 
                         if action == "SCROLL_MESSAGES":
                             message_index = message_index - 1 if abs(message_index) < len(messages) else -len(messages)
-                            messages_seen = False
+                            show_message_on_next_render = True
                             continue
 
                         if not is_alive(player):
@@ -75,13 +75,13 @@ def main():
                         turn_processed, new_messages = process_turn(dungeon, player, action, turn_count)
                         if turn_processed:
                             update_fov(dungeon, player.x, player.y)
-                            messages_seen = True
+                            show_message_on_next_render = False
                             turn_count += 1
 
                         if len(new_messages) > 0:
                             messages += new_messages
                             message_index = -1
-                            messages_seen = False
+                            show_message_on_next_render = True
 
 
 if __name__ == "__main__":
